@@ -1,0 +1,17 @@
+[project]
+name = "cyberkrea-sampler"
+version = "0.1.0"
+description = "A compact, preset-driven Krea 2 Turbo sampler for ComfyUI with direct manual tuning and NegPiP-friendly model wiring."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/cyberdelia/ComfyUI-CyberKrea-Sampler"
+Icon = "https://raw.githubusercontent.com/cyberdeliaAI/comfyui-krea2-merge/main/assets/icon.png"
+
+[tool.comfy]
+PublisherId = "YOUR_PUBLISHER_ID"
+DisplayName = "CyberKrea Sampler"
+Icon = "https://raw.githubusercontent.com/cyberdeliaAI/ComfyUI-CyberKrea-Sampler/main/assets/icon.png"
