@@ -1,7 +1,7 @@
 [project]
 name = "cyberkrea-sampler"
-version = "0.1.0"
-description = "A compact, preset-driven Krea 2 Turbo sampler for ComfyUI with direct manual tuning and NegPiP-friendly model wiring."
+version = "0.2.0"
+description = "A preset-driven Krea 2 Turbo sampler and 16-channel empty latent node for ComfyUI, with direct manual tuning and NegPiP-friendly model wiring."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { file = "LICENSE" }

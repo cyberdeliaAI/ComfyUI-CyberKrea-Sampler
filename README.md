@@ -1,7 +1,7 @@
 # ComfyUI-CyberKrea-Sampler
 
-A compact Krea 2 Turbo sampler for workflows that already patch the model with
-LoRAs and/or NegPiP.
+A compact Krea 2 Turbo sampler and resolution-aware empty latent node for
+workflows that already patch the model with LoRAs and/or NegPiP.
 
 CyberKrea uses its own technical identifiers, package, category and display
 name, preventing conflicts with other sampler nodes. It provides calibrated
@@ -40,12 +40,27 @@ Preset defaults:
 Choosing another preset updates every displayed preset field. You can then
 change any individual value without losing the rest of the selected preset.
 
+## CyberKrea Empty Latent
+
+`CyberKrea Empty Latent` creates the 16-channel latent expected by Krea 2 and
+outputs the selected `width` and `height` as integers. Choose a size tier first;
+the resolution dropdown then shows only the matching dimensions.
+
+| Tier | Available resolutions |
+|---|---|
+| S (~1.0 MP) | 1024x1024, 1152x864, 896x1344, 1344x768, 768x1344 |
+| M (~1.4 MP) | 1184x1184, 1344x1008, 1040x1568, 1568x880, 880x1568 |
+| L (~1.7 MP) | 1312x1312, 1504x1120, 1088x1600, 1728x960, 960x1728 |
+| XL (~2.1 MP) | 1440x1440, 1664x1248, 1184x1776, 1920x1088, 1088x1920 |
+
+Every dimension is divisible by 16 for the Wan21 VAE and Krea 2 patch layout.
+
 ## NegPiP wiring
 
 ```text
 base model -> LoRA(s) -> NegPiP model output -> CyberKrea Sampler (model)
 prompt/NegPiP positive conditioning ----------> CyberKrea Sampler (positive)
-Krea 2 latent --------------------------------> CyberKrea Sampler (latent_image)
+CyberKrea Empty Latent -----------------------> CyberKrea Sampler (latent_image)
 ```
 
 Leave the Lite sampler's `negative` input empty when NegPiP is already handling
