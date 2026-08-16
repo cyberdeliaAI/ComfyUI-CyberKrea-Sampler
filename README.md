@@ -64,13 +64,6 @@ ComfyUI/custom_nodes/ComfyUI-CyberKrea-Sampler
 Restart ComfyUI. No extra Python packages are required beyond ComfyUI's own
 PyTorch/Comfy modules.
 
-## GitHub and ComfyUI Registry
-
-- Recommended GitHub repository: `ComfyUI-CyberKrea-Sampler`
-- Registry node ID: `cyberkrea-sampler`
-- Before publishing, replace `YOUR_PUBLISHER_ID` in `pyproject.toml` with the
-  immutable Publisher ID created in your ComfyUI Registry account.
-
 ## Credits and license
 
 The sampler engine is derived from ComfyUI-KreaPhoton by Kostiantyn Hrytsuk,

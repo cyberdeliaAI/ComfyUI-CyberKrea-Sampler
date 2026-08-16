@@ -8,10 +8,11 @@ license = { file = "LICENSE" }
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/cyberdelia/ComfyUI-CyberKrea-Sampler"
-Icon = "https://raw.githubusercontent.com/cyberdeliaAI/comfyui-krea2-merge/main/assets/icon.png"
+Repository = "https://github.com/cyberdeliaAI/ComfyUI-CyberKrea-Sampler"
+Homepage = "https://www.cyberdelia.nl"
+"Bug Tracker" = "https://github.com/cyberdeliaAI/ComfyUI-CyberKrea-Sampler/issues"
 
 [tool.comfy]
-PublisherId = "YOUR_PUBLISHER_ID"
+PublisherId = "cyberdelia"
 DisplayName = "CyberKrea Sampler"
 Icon = "https://raw.githubusercontent.com/cyberdeliaAI/ComfyUI-CyberKrea-Sampler/main/assets/icon.png"
