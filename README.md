@@ -3,12 +3,10 @@
 A compact Krea 2 Turbo sampler for workflows that already patch the model with
 LoRAs and/or NegPiP.
 
-CyberKrea is a separate node and uses its own technical identifiers, package,
-category and display name, so it can be installed alongside KreaPhoton without
-node conflicts. Its sampling core is derived from
-[ComfyUI-KreaPhoton](https://github.com/Kostik2702/ComfyUI-KreaPhoton) and keeps
-its Photon sampling engine and calibrated presets. The UI deliberately removes
-`clean_model`, variety, composition blending and the raw/experimental preset.
+CyberKrea uses its own technical identifiers, package, category and display
+name, preventing conflicts with other sampler nodes. It provides calibrated
+presets with direct manual control while deliberately omitting `clean_model`,
+variety, composition blending and the raw/experimental preset.
 
 ## Node
 
@@ -64,7 +62,6 @@ ComfyUI/custom_nodes/ComfyUI-CyberKrea-Sampler
 Restart ComfyUI. No extra Python packages are required beyond ComfyUI's own
 PyTorch/Comfy modules.
 
-## Credits and license
+## License
 
-The sampler engine is derived from ComfyUI-KreaPhoton by Kostiantyn Hrytsuk,
-used under its MIT license. See `LICENSE`.
+Released under the MIT license. See `LICENSE`.
