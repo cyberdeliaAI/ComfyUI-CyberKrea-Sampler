@@ -30,11 +30,17 @@ def test_resolution_tiers_and_dimensions():
     assert list(resolutions.RESOLUTION_OPTIONS) == [
         "S (~1.0 MP)", "M (~1.4 MP)", "L (~1.7 MP)", "XL (~2.1 MP)"
     ]
-    assert all(len(options) == 5 for options in resolutions.RESOLUTION_OPTIONS.values())
+    assert all(len(options) == 7 for options in resolutions.RESOLUTION_OPTIONS.values())
     assert resolutions.DEFAULT_RESOLUTION == "1088x1600 (2:3)"
     assert resolutions.resolve_dimensions(
         "L (~1.7 MP)", "1088x1600 (2:3)"
     ) == (1088, 1600)
+    assert resolutions.resolve_dimensions(
+        "L (~1.7 MP)", "1600x1088 (3:2)"
+    ) == (1600, 1088)
+    assert resolutions.resolve_dimensions(
+        "L (~1.7 MP)", "1120x1504 (3:4)"
+    ) == (1120, 1504)
 
 
 def test_every_dimension_is_latent_safe():

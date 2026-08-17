@@ -9,24 +9,14 @@ from .presets import (
 
 CATEGORY = "CyberKrea"
 
-# The source bucket named "3:2" contains portrait dimensions. Present it as
-# 2:3 in the UI so the visible ratio matches the selected orientation.
-_DISPLAY_ASPECTS = {
-    "1:1": "1:1",
-    "4:3": "4:3",
-    "3:2": "2:3",
-    "16:9": "16:9",
-    "9:16": "9:16",
-}
-
 
 def _build_resolution_options():
     options = {}
     dimensions = {}
     for size, aspects in RESOLUTION_BUCKETS.items():
         size_options = []
-        for source_aspect, (width, height) in aspects.items():
-            label = f"{width}x{height} ({_DISPLAY_ASPECTS[source_aspect]})"
+        for aspect, (width, height) in aspects.items():
+            label = f"{width}x{height} ({aspect})"
             size_options.append(label)
             dimensions[(size, label)] = (width, height)
         options[size] = size_options
@@ -43,7 +33,7 @@ _default_width, _default_height = RESOLUTION_BUCKETS[DEFAULT_RESOLUTION_SIZE][
 ]
 DEFAULT_RESOLUTION = (
     f"{_default_width}x{_default_height} "
-    f"({_DISPLAY_ASPECTS[DEFAULT_RESOLUTION_ASPECT]})"
+    f"({DEFAULT_RESOLUTION_ASPECT})"
 )
 
 
