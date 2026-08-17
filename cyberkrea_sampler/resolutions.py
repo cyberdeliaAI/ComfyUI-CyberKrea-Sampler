@@ -38,13 +38,25 @@ DEFAULT_RESOLUTION = (
 
 
 def resolve_dimensions(size, resolution):
-    """Return the selected width and height, rejecting mismatched tiers."""
+    """Return dimensions, preserving the aspect after a stale UI tier change."""
     try:
         return _DIMENSIONS[(size, resolution)]
-    except KeyError as error:
-        raise ValueError(
-            f"Resolution {resolution!r} does not belong to size {size!r}"
-        ) from error
+    except KeyError:
+        pass
+
+    # ComfyUI can briefly restore the size widget before it refreshes the
+    # dependent resolution widget. If the stale value is one of our valid
+    # resolutions, select the same aspect in the active tier instead.
+    if resolution in ALL_RESOLUTIONS and size in RESOLUTION_OPTIONS:
+        aspect = resolution.rpartition("(")[2].removesuffix(")")
+        suffix = f"({aspect})"
+        for candidate in RESOLUTION_OPTIONS[size]:
+            if candidate.endswith(suffix):
+                return _DIMENSIONS[(size, candidate)]
+
+    raise ValueError(
+        f"Resolution {resolution!r} does not belong to size {size!r}"
+    )
 
 
 class CyberKreaEmptyLatent:

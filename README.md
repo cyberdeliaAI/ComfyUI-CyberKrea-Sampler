@@ -61,7 +61,7 @@ the resolution dropdown then shows only the matching dimensions.
 
 | Option | Description |
 |---|---|
-| `size` | Selects the S, M, L, or XL megapixel tier and filters the resolution dropdown. |
+| `size` | Selects the S, M, L, or XL megapixel tier, filters the resolution dropdown, and preserves the selected aspect ratio. |
 | `resolution` | Selects the concrete width, height, and aspect ratio within the chosen tier. |
 | `batch_size` | Number of empty latents generated in one batch. Higher values require more VRAM. |
 

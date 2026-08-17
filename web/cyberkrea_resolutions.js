@@ -39,6 +39,29 @@ const RESOLUTIONS = {
     ],
 };
 
+function aspectOf(resolution) {
+    return resolution?.match(/\(([^()]+)\)\s*$/)?.[1];
+}
+
+function syncResolutionWidgets(node, selectedSize) {
+    const sizeWidget = node.widgets?.find((widget) => widget.name === "size");
+    const resolutionWidget = node.widgets?.find(
+        (widget) => widget.name === "resolution"
+    );
+    if (!sizeWidget || !resolutionWidget) return;
+
+    const resolutions = RESOLUTIONS[selectedSize ?? sizeWidget.value] || [];
+    const previousAspect = aspectOf(resolutionWidget.value);
+    resolutionWidget.options.values = resolutions;
+
+    if (!resolutions.includes(resolutionWidget.value)) {
+        resolutionWidget.value = resolutions.find(
+            (resolution) => aspectOf(resolution) === previousAspect
+        ) || resolutions[0];
+    }
+    node.setDirtyCanvas(true, true);
+}
+
 app.registerExtension({
     name: "CyberKreaSampler.Resolutions",
     async beforeRegisterNodeDef(nodeType, nodeData) {
@@ -53,21 +76,21 @@ app.registerExtension({
             );
             if (!sizeWidget || !resolutionWidget) return result;
 
-            const updateResolutionOptions = (size) => {
-                const resolutions = RESOLUTIONS[size] || [];
-                resolutionWidget.options.values = resolutions;
-                if (!resolutions.includes(resolutionWidget.value)) {
-                    resolutionWidget.value = resolutions[0];
-                }
-                this.setDirtyCanvas(true, true);
-            };
-
             const originalCallback = sizeWidget.callback;
+            const node = this;
             sizeWidget.callback = function (value) {
-                updateResolutionOptions(value);
+                syncResolutionWidgets(node, value);
                 return originalCallback?.apply(this, arguments);
             };
-            updateResolutionOptions(sizeWidget.value);
+            syncResolutionWidgets(this);
+            setTimeout(() => syncResolutionWidgets(this), 0);
+            return result;
+        };
+
+        const onConfigure = nodeType.prototype.onConfigure;
+        nodeType.prototype.onConfigure = function () {
+            const result = onConfigure?.apply(this, arguments);
+            setTimeout(() => syncResolutionWidgets(this), 0);
             return result;
         };
     },
