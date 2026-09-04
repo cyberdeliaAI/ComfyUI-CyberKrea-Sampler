@@ -1,7 +1,8 @@
-__pycache__/
-*.py[cod]
-.ruff_cache/
-node.zip
-tests/
 .git/
+.github/
+tests/
+.ruff_cache/
+__pycache__/
+*.pyc
+*.zip
 .DS_Store

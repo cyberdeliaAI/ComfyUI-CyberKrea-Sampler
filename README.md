@@ -1,5 +1,12 @@
 # ComfyUI-CyberKrea-Sampler
 
+<p align="center">
+  <img src="assets/icon.png" alt="CyberKrea Sampler icon" width="200">
+</p>
+
+[![Tests](https://github.com/cyberdeliaAI/ComfyUI-CyberKrea-Sampler/actions/workflows/tests.yml/badge.svg)](https://github.com/cyberdeliaAI/ComfyUI-CyberKrea-Sampler/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A compact Krea 2 Turbo sampler and resolution-aware empty latent node for
 workflows that already patch the model with LoRAs and/or NegPiP.
 
