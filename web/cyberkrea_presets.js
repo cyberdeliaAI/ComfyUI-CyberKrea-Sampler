@@ -1,43 +1,7 @@
 import { app } from "../../scripts/app.js";
 
-const PRESETS = {
-    fast: {
-        steps: 8,
-        sampler: "euler",
-        restart_frac: 0.25,
-        sigma_r: 0.65,
-        plunge: true,
-        detail: 0.50,
-        eta0: 1.0,
-        sigma_gate: 0.10,
-        contraction: 0.70,
-    },
-    balanced: {
-        steps: 12,
-        sampler: "euler",
-        restart_frac: 0.25,
-        sigma_r: 0.65,
-        plunge: true,
-        detail: 0.60,
-        eta0: 1.0,
-        sigma_gate: 0.10,
-        contraction: 0.70,
-    },
-    quality: {
-        steps: 16,
-        sampler: "euler_2m",
-        restart_frac: 0.25,
-        sigma_r: 0.65,
-        plunge: true,
-        detail: 0.70,
-        eta0: 1.0,
-        sigma_gate: 0.10,
-        contraction: 0.70,
-    },
-};
-
-function applyPreset(node, presetName) {
-    const values = PRESETS[presetName];
+function applyPreset(node, presetName, presets) {
+    const values = presets[presetName];
     if (!values) return;
 
     for (const [name, value] of Object.entries(values)) {
@@ -51,6 +15,8 @@ app.registerExtension({
     name: "CyberKreaSampler.PresetValues",
     async beforeRegisterNodeDef(nodeType, nodeData) {
         if (nodeData.name !== "CyberKreaSampler") return;
+        const presets = nodeData.input?.required?.preset?.[1]?.cyberkrea_presets;
+        if (!presets) return;
 
         const onNodeCreated = nodeType.prototype.onNodeCreated;
         nodeType.prototype.onNodeCreated = function () {
@@ -61,7 +27,7 @@ app.registerExtension({
             const originalCallback = preset.callback;
             preset.callback = (value, ...args) => {
                 const callbackResult = originalCallback?.call(preset, value, ...args);
-                applyPreset(this, value);
+                applyPreset(this, value, presets);
                 return callbackResult;
             };
             return result;

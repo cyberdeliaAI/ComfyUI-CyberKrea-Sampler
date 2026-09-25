@@ -1,10 +1,30 @@
 """Krea 2 resolution selector and 16-channel empty latent node."""
 
-from .presets import (
-    DEFAULT_RESOLUTION_ASPECT,
-    DEFAULT_RESOLUTION_SIZE,
-    RESOLUTION_BUCKETS,
-)
+# Wan21 spatial downsampling /8 and Krea's 2x2 latent patches require /16.
+RESOLUTION_BUCKETS = {
+    "S (~1.0 MP)": {
+        "1:1": (1024, 1024), "4:3": (1152, 864), "3:4": (864, 1152),
+        "3:2": (1344, 896), "2:3": (896, 1344),
+        "16:9": (1344, 768), "9:16": (768, 1344),
+    },
+    "M (~1.4 MP)": {
+        "1:1": (1184, 1184), "4:3": (1344, 1008), "3:4": (1008, 1344),
+        "3:2": (1568, 1040), "2:3": (1040, 1568),
+        "16:9": (1568, 880), "9:16": (880, 1568),
+    },
+    "L (~1.7 MP)": {
+        "1:1": (1312, 1312), "4:3": (1504, 1120), "3:4": (1120, 1504),
+        "3:2": (1600, 1088), "2:3": (1088, 1600),
+        "16:9": (1728, 960), "9:16": (960, 1728),
+    },
+    "XL (~2.1 MP)": {
+        "1:1": (1440, 1440), "4:3": (1664, 1248), "3:4": (1248, 1664),
+        "3:2": (1776, 1184), "2:3": (1184, 1776),
+        "16:9": (1920, 1088), "9:16": (1088, 1920),
+    },
+}
+DEFAULT_RESOLUTION_SIZE = "L (~1.7 MP)"
+DEFAULT_RESOLUTION_ASPECT = "2:3"
 
 
 CATEGORY = "CyberKrea"
@@ -69,6 +89,7 @@ class CyberKreaEmptyLatent:
                 "size": (list(RESOLUTION_OPTIONS.keys()), {
                     "default": DEFAULT_RESOLUTION_SIZE,
                     "tooltip": "Krea 2 resolution tier; filters the resolution list.",
+                    "cyberkrea_resolutions": RESOLUTION_OPTIONS,
                 }),
                 "resolution": (ALL_RESOLUTIONS, {
                     "default": DEFAULT_RESOLUTION,

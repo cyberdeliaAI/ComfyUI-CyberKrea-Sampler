@@ -1,74 +1,56 @@
-"""Pure settings tests; no ComfyUI installation required."""
+"""Preset defaults, manual overrides, validation and frontend metadata."""
 
-import importlib.util
-import pathlib
-import sys
-import types
+import unittest
 
-
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-PACKAGE = ROOT / "cyberkrea_sampler"
+from cyberkrea_sampler.presets import DEFAULT_PRESET, PRESETS
+from support import engine_modules
 
 
-def load_module(name):
-    path = PACKAGE / f"{name}.py"
-    spec = importlib.util.spec_from_file_location(f"cyberkrea_sampler.{name}", path)
-    module = importlib.util.module_from_spec(spec)
-    sys.modules[spec.name] = module
-    spec.loader.exec_module(module)
-    return module
+class SettingsTests(unittest.TestCase):
+    def setUp(self):
+        self.modules = self.enterContext(engine_modules())
+        self.nodes = self.modules.nodes
 
+    def test_all_presets_resolve_without_frontend(self):
+        for name, defaults in PRESETS.items():
+            with self.subTest(preset=name):
+                result = self.nodes.resolve_settings(name)
+                self.assertEqual({k: result[k] for k in defaults}, defaults)
+                self.assertEqual(result["order"], 1)
 
-package = types.ModuleType("cyberkrea_sampler")
-package.__path__ = [str(PACKAGE)]
-sys.modules["cyberkrea_sampler"] = package
-load_module("presets")
+    def test_explicit_controls_override_preset_including_zero_and_false(self):
+        overrides = dict(steps=10, sampler="euler_2m", restart_frac=0.0,
+                         sigma_r=0.55, plunge=False, detail=0.42, eta0=0.0,
+                         sigma_gate=0.20, contraction=0.0)
+        for name in PRESETS:
+            result = self.nodes.resolve_settings(name, **overrides)
+            self.assertEqual({k: result[k] for k in overrides}, overrides)
+            self.assertEqual(result["order"], 2)
 
-# Stub ComfyUI-dependent engine modules; resolve_settings does not call them.
-sampling = types.ModuleType("cyberkrea_sampler.sampling")
-sampling.run_sampling = None
-sys.modules[sampling.__name__] = sampling
-schedules = types.ModuleType("cyberkrea_sampler.schedules")
-schedules.build_schedule = None
-sys.modules[schedules.__name__] = schedules
-nodes = load_module("nodes")
+    def test_settings_do_not_modify_preset(self):
+        result = self.nodes.resolve_settings("balanced")
+        result["steps"] = 1
+        self.assertEqual(PRESETS["balanced"]["steps"], 12)
 
+    def test_invalid_inputs_are_rejected(self):
+        cases = [("steps", 0), ("steps", 65), ("steps", 1.5), ("steps", True),
+                 ("sampler", "unknown"), ("plunge", "false"), ("restart_frac", .61),
+                 ("sigma_r", -1), ("detail", 2), ("eta0", 3),
+                 ("sigma_gate", float("nan")), ("contraction", float("inf")),
+                 ("contraction", "invalid")]
+        for key, value in cases:
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                self.nodes.resolve_settings("balanced", **{key: value})
+        with self.assertRaisesRegex(ValueError, "Unknown CyberKrea preset"):
+            self.nodes.resolve_settings("raw/experimental")
 
-def test_preset_defaults():
-    balanced = nodes.resolve_settings(
-        "balanced", 12, "euler", 0.25, 0.65, True, 0.60, 1.0, 0.10, 0.70
-    )
-    assert balanced["steps"] == 12
-    assert balanced["detail"] == 0.60
-    assert balanced["sampler"] == "euler"
-
-
-def test_overrides():
-    result = nodes.resolve_settings(
-        "balanced",
-        steps=10,
-        sampler="euler_2m",
-        restart_frac=0.15,
-        sigma_r=0.55,
-        plunge=False,
-        detail=0.42,
-        eta0=0.50,
-        sigma_gate=0.20,
-        contraction=0.85,
-    )
-    assert result["steps"] == 10
-    assert result["detail"] == 0.42
-    assert result["sampler"] == "euler_2m"
-    assert result["order"] == 2
-    assert result["restart_frac"] == 0.15
-    assert result["sigma_r"] == 0.55
-    assert result["plunge"] is False
-    assert result["eta0"] == 0.50
-    assert result["sigma_gate"] == 0.20
-    assert result["contraction"] == 0.85
+    def test_ui_defaults_and_metadata_use_python_presets(self):
+        inputs = self.nodes.CyberKreaSampler.INPUT_TYPES()["required"]
+        self.assertEqual(inputs["preset"][1]["cyberkrea_presets"], PRESETS)
+        for key, value in PRESETS[DEFAULT_PRESET].items():
+            self.assertEqual(inputs[key][1]["default"], value)
+        self.assertEqual(inputs["preview_method"][1]["default"], "default")
 
 
 if __name__ == "__main__":
-    test_preset_defaults()
-    test_overrides()
-    print("CyberKrea Sampler settings tests passed")
+    unittest.main()

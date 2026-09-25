@@ -1,21 +1,5 @@
-"""
-Sigma-adaptive guidance window (M6) — the ONLY sanctioned way to implement
-phase-windowed guidance for KreaPhoton (planning-council B4/D10-D14/H29).
+"""Sigma-dependent CFG applied through ComfyUI's standard guider path."""
 
-Ground truth (E:\\CUI portable\\ComfyUI-torch2.9-cu130-cp313-v1.2\\ComfyUI):
-  comfy/samplers.py:609-612  sampling_function(): at math.isclose(cond_scale,1.0)
-                              and disable_cfg1_optimization not set -> uncond_=None,
-                              ZERO extra NFE for that step (stock optimization).
-  comfy/samplers.py:1211-1212 CFGGuider.predict_noise (the ONE method we override)
-  comfy/samplers.py:592-602   sampler_cfg_function / sampler_post_cfg_function hooks
-                              receive a ZEROED uncond at cfg=1.0 (calc_cond_batch
-                              leaves the unconsumed accumulator at zeros) — silent
-                              garbage for exactly our default (cfg=1.0) path.
-
-RULE: guidance windows are NEVER implemented via model_options hooks
-(sampler_cfg_function / sampler_post_cfg_function). Only a CFGGuider subclass
-sees whether uncond was actually computed this step.
-"""
 import comfy.samplers
 import torch
 
@@ -26,26 +10,19 @@ def smoothstep01(u: float) -> float:
 
 
 def g_window(sigma: float, delta: float, lo: float = 0.7, hi: float = 0.9) -> float:
-    """g(sigma) = 1 + delta * smoothstep((sigma-lo)/(hi-lo)).
+    """CFG ramp: 1 below lo, rising to 1 + delta at hi, then constant.
 
-    MUST return exactly 1.0 outside [lo, hi] (smoothstep01 clamps its argument to
-    [0,1] before the cubic, so u<=0 -> smoothstep=0 -> g=1.0 exactly; no epsilon
-    residue, unlike a sigmoid-form window would leave). This is what lets the
-    stock cfg1-optimization (samplers.py:609) fire for free outside the window.
+    The historical function name is retained. This is not a bounded window:
+    guidance stays active above hi. At and below lo, exactly 1.0 allows
+    ComfyUI's CFG=1 optimization when model patches have not disabled it.
     """
+    if hi <= lo:
+        raise ValueError("guidance hi must be greater than lo")
     return 1.0 + delta * smoothstep01((sigma - lo) / (hi - lo))
 
 
 class CyberKreaGuider(comfy.samplers.CFGGuider):
-    """CFGGuider subclass implementing the M6 guidance window.
-
-    Overrides ONLY predict_noise (comfy/samplers.py:1211-1212 is a 1-line method;
-    everything else — prepare_sampling, process_conds, device management, wrapper
-    executors — is inherited unchanged, verified against the live 0.26 source).
-
-    self.conds is populated by the base class's inner_sample/process_conds before
-    any predict_noise call; never read self.original_conds here.
-    """
+    """Change CFG per evaluation while preserving model options and patches."""
 
     def __init__(self, model_patcher, delta: float, lo: float = 0.7, hi: float = 0.9):
         super().__init__(model_patcher)
