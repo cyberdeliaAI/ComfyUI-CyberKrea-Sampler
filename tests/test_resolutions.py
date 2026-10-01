@@ -13,7 +13,7 @@ class ResolutionTests(unittest.TestCase):
         self.assertEqual(resolutions.CyberKreaEmptyLatent.INPUT_TYPES()["required"]["size"][1]
                          ["cyberkrea_resolutions"], resolutions.RESOLUTION_OPTIONS)
         for tier, options in resolutions.RESOLUTION_OPTIONS.items():
-            self.assertEqual(len(options), 7)
+            self.assertEqual(len(options), 11)
             for option in options:
                 width, height = resolutions.resolve_dimensions(tier, option)
                 self.assertEqual(width % 16, 0)

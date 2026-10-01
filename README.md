@@ -104,14 +104,24 @@ the resolution dropdown then shows only the matching dimensions.
 | `resolution` | Selects the concrete width, height, and aspect ratio within the chosen tier. |
 | `batch_size` | Number of empty latents generated in one batch. Higher values require more VRAM. |
 
-| Tier | Available resolutions |
-|---|---|
-| S (~1.0 MP) | 1024x1024, 1152x864, 864x1152, 1344x896, 896x1344, 1344x768, 768x1344 |
-| M (~1.4 MP) | 1184x1184, 1344x1008, 1008x1344, 1568x1040, 1040x1568, 1568x880, 880x1568 |
-| L (~1.7 MP) | 1312x1312, 1504x1120, 1120x1504, 1600x1088, 1088x1600, 1728x960, 960x1728 |
-| XL (~2.1 MP) | 1440x1440, 1664x1248, 1248x1664, 1776x1184, 1184x1776, 1920x1088, 1088x1920 |
+| Aspect | S (~1.0 MP) | M (~1.4 MP) | L (~1.7 MP) | XL (~2.1 MP) |
+|---|---|---|---|---|
+| 1:1 | 1024x1024 | 1184x1184 | 1312x1312 | 1440x1440 |
+| 4:3 | 1152x864 | 1344x1008 | 1504x1120 | 1664x1248 |
+| 3:4 | 864x1152 | 1008x1344 | 1120x1504 | 1248x1664 |
+| 3:2 | 1344x896 | 1568x1040 | 1600x1088 | 1776x1184 |
+| 2:3 | 896x1344 | 1040x1568 | 1088x1600 | 1184x1776 |
+| 16:9 | 1344x768 | 1568x880 | 1728x960 | 1920x1088 |
+| 9:16 | 768x1344 | 880x1568 | 960x1728 | 1088x1920 |
+| 21:9 | 1568x672 | 1792x768 | 2016x864 | 2240x960 |
+| 9:21 | 672x1568 | 768x1792 | 864x2016 | 960x2240 |
+| 5:4 | 1120x896 | 1360x1088 | 1440x1152 | 1600x1280 |
+| 4:5 | 896x1120 | 1088x1360 | 1152x1440 | 1280x1600 |
 
 Every dimension is divisible by 16 for the Wan21 VAE and Krea 2 patch layout.
+Some original buckets approximate their displayed aspect ratio; the added
+21:9, 9:21, 5:4 and 4:5 buckets are exact. These additions extend the available
+canvas sizes; their image quality has not been validated through generation tests.
 
 ## NegPiP wiring
 

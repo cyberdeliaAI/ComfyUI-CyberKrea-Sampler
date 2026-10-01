@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.1
+
+- Add 21:9 and 9:21 panoramic resolutions to every Empty Latent size tier.
+- Add 5:4 and 4:5 photo resolutions to every tier, for 11 aspect choices per tier.
+- All added dimensions use exact aspect ratios and multiples of 16. Existing
+  resolutions and the default selection are preserved, and the selected aspect
+  is retained when switching tiers.
+
 ## 0.3.0
 
 - Preserve the requested sampling budget for one- and two-step schedules,
